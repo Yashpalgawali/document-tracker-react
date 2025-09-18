@@ -40,7 +40,6 @@ export default function RegulationTypeComponent() {
     function onSubmit(values) {
 
         if(id != -1) {
-            alert('update ')
             let regulationType = {
                 regulation_type_id : id,
                 regulation_type : values.regulation_type
@@ -55,11 +54,11 @@ export default function RegulationTypeComponent() {
             })
         }
         else {            
-            let regulationType = {              
+            let regulationType = {
                 regulation_type : values.regulation_type
             }
 
-             saveRegulationType(regulationType).then((response)=> {              
+            saveRegulationType(regulationType).then((response)=> {              
                 showToast(response.data?.responseMessage,'success')
                 navigate(`/regulationtypes`)
             }).catch((error) => {

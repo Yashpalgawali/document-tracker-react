@@ -8,7 +8,8 @@ import { getAllRegulationTypes, updateRegulationType } from "../../api/Regulatio
 import EditIcon from '@mui/icons-material/Edit';
 
 import 'datatables.net-dt/css/dataTables.dataTables.css'; // DataTables CSS styles
-import 'datatables.net'; // DataTables core functionality
+import 'datatables.net'; // DataTables core functionality 
+import { showToast } from '../SharedComponent/showToast';
 
 export default function ViewRegulationTypeComponent() {
     
@@ -29,7 +30,7 @@ export default function ViewRegulationTypeComponent() {
             console.log(response)
             setRegulationTypeList(response.data)
         }).catch((error)=> {
-
+            showToast(error.data.errorMessage,"error")
         })
     },[])
     
