@@ -33,7 +33,12 @@ export default function NotificationComponent() {
     })
 
     function validate(values) {
+        let errors = {}
 
+        if(values.notification_name=='') {
+            errors.notification_name="Notification Name can't be blank"
+        }
+        return errors
     }
 
     function onSubmit(values) {
@@ -48,8 +53,9 @@ export default function NotificationComponent() {
             </Box>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Formik
-                initialValues={ { notification_name , notification_add_date , notification_add_time ,
-                                  notification_description , notification_end_date, notification_start_date
+                initialValues={ { notification_name , notification_add_date: notification_add_date ? dayjs(notification_add_date) : null , notification_add_time ,
+                                  notification_description , notification_end_date : notification_end_date ? dayjs(notification_end_date) : null ,
+                                  notification_start_date : notification_start_date ? dayjs(notification_start_date) : null 
                  } }
                 enableReinitialize={true}
                 validate={validate}
