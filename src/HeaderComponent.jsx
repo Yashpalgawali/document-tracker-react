@@ -23,10 +23,11 @@ export default function HeaderComponent(){
                                 <ul className="navbar-nav ms-auto">
         
                                 <li className="nav-item fs-5">
-                                { isAuthenticated &&
+                                {  
                                      <Link className="nav-link" to="/regulationtypes">Regulation Types</Link>
                                 }
                                 </li>
+                                
                               </ul>
                             </div>
                         </nav>
