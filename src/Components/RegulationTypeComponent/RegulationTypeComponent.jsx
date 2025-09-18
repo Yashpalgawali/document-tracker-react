@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { Box, Button,  TextField, Typography } from "@mui/material"
 import { useParams, useNavigate } from "react-router-dom"
 import { getRegulationTypeById, saveRegulationType, updateRegulationType } from "../../api/RegulationTypeApi" 
-import { showToast } from "../../SharedComponent/showToast"
+import { showToast } from "../SharedComponent/showToast";
 
 export default function RegulationTypeComponent() {
 
@@ -46,7 +46,7 @@ export default function RegulationTypeComponent() {
             }
 
             updateRegulationType(regulationType).then((response)=> {
-                showToast(response.data?.responseMessage,'success')
+                // showToast(response.data?.responseMessage,'success')
                 navigate(`/regulationtypes`)
             }).catch((error) => {
                 showToast(error?.data?.errorMessage,"error")
@@ -59,10 +59,10 @@ export default function RegulationTypeComponent() {
             }
 
             saveRegulationType(regulationType).then((response)=> {              
-                showToast(response.data?.responseMessage,'success')
+                // showToast(response.data?.responseMessage,'success')
                 navigate(`/regulationtypes`)
             }).catch((error) => {
-                showToast(error?.data?.errorMessage,"error")
+                // showToast(error?.data?.errorMessage,"error")
                 navigate(`/regulationtypes`)
             })
         }

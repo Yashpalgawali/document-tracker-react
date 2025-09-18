@@ -3,6 +3,8 @@ import RegulationTypeComponent from "./Components/RegulationTypeComponent/Regula
 import HeaderComponent from "./HeaderComponent";
 import ViewRegulationTypeComponent from "./Components/RegulationTypeComponent/ViewRegulationTypeComponent";
 import { ToastContainer } from "react-toastify";
+import ViewNotificationComponent from "./Components/NotificationComponent/ViewNotificationComponent";
+import NotificationComponent from "./Components/NotificationComponent/NotificationComponent";
 
 export default function DocumentTracker(){
     return (
@@ -17,6 +19,13 @@ export default function DocumentTracker(){
 
             <Routes>
                 <Route element={ <ViewRegulationTypeComponent />} path="/regulationtypes" ></Route>
+            </Routes>
+            <Routes>
+                <Route element= { <ViewNotificationComponent /> } path="/viewnotifications"></Route> 
+            </Routes>
+
+            <Routes>
+                <Route element= { <NotificationComponent /> } path="/notification/:id"></Route>
             </Routes>
         </BrowserRouter >
         </>

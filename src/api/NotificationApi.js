@@ -1,4 +1,4 @@
-import { apiClient } from "../../../training-tracker/src/Components/api/apiClient";
+import { apiClient } from "../api/apiClient";
 
 export const saveNotification = (notification) => apiClient.post(`notification/`,notification)
 

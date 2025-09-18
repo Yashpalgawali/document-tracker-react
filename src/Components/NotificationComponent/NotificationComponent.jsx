@@ -1,7 +1,13 @@
-import { Box, TextField } from "@mui/material"
+import { Box, TextField, Typography } from "@mui/material"
 import { ErrorMessage, Form, Formik } from "formik"
-import { useActionState, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'; 
+import dayjs  from "dayjs";
 
 export default function NotificationComponent() {
 
@@ -20,14 +26,26 @@ export default function NotificationComponent() {
     const navigate = useNavigate()
 
     useEffect(()=> {
+        alert('id is '+id)
         if(id != -1) {
             setBtnValue('Update Notification')
         }
     })
 
+    function validate(values) {
+
+    }
+
+    function onSubmit(values) {
+
+    }
+
     return(
 
         <div className="container">
+            <Box mb={2}>
+                <Typography variant="h4">{btnvalue}</Typography>
+            </Box>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Formik
                 initialValues={ { notification_name , notification_add_date , notification_add_time ,
@@ -49,32 +67,41 @@ export default function NotificationComponent() {
                         >
                         <TextField
                             label="Notification Name"
-                            variant="filled"
+                            variant="standard"
                             name="notification_name"
                             value={values.notification_name}
-                           
+                            onChange={handleChange}
+                            onBlur={handleBlur}
                             helperText={<ErrorMessage name="notification_name" />}
                             fullWidth
                         ></TextField>
 
                         <TextField
                             label="Notification Description"
-                            variant="filled"
+                            variant="standard"
                             name="notification_description"
                             value={values.notification_description}
-                           
+                            onChange={handleChange}
+                            onBlur={handleBlur}
                             helperText={<ErrorMessage name="notification_description" />}
                             fullWidth
                         ></TextField>
                         
-                        <TextField
-                            label="Notification Description"
-                            variant="filled"
-                            name="notification_description"
-                            value={values.notification_description}
-                            helperText={<ErrorMessage name="notification_description" />}
-                            fullWidth
-                        ></TextField>
+                        <Box mb={2}  >
+                                <DatePicker
+                                    
+                                    format="DD/MM/YYYY"
+                                    label="Notification Start Date"
+                                    value={values.notification_start_date}
+                                    onChange={(date) => setFieldValue('notification_start_date', date)}
+                                    slotProps={{
+                                    textField: { 
+                                        error: touched.notification_start_date && Boolean(errors.notification_start_date),
+                                        helperText: <ErrorMessage name="notification_start_date" />
+                                    }
+                                    }}
+                                />
+                            </Box>
 
                         </Box>
                     </Form>
