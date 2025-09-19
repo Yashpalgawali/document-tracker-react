@@ -10,7 +10,7 @@ export default function DocumentTracker(){
     return (
         <>
        
-        <BrowserRouter>
+        <BrowserRouter basename="documenttracker">
             <HeaderComponent />
             <ToastContainer autoClose={2500} position="top-center"></ToastContainer>
             <Routes>

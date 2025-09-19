@@ -14,12 +14,12 @@ export default function RegulationTypeComponent() {
     const {id} =  useParams()
     const navigate = useNavigate()
 
-    useEffect(()=> {
-       
+   useEffect(()=> {
+      
         if(id != -1) {
             setBtnValue('Update Regulation Type')
-            getRegulationTypeById(id).then((response) => {
-                
+          getRegulationTypeById(id).then((response) => {
+                alert(response.data.regulation_type)
                 setRegulationTypeId(response.data.regulation_type_id)
                 setRegulationType(response.data.regulation_type)
             })
@@ -46,7 +46,7 @@ export default function RegulationTypeComponent() {
             }
 
             updateRegulationType(regulationType).then((response)=> {
-                // showToast(response.data?.responseMessage,'success')
+                showToast(response.data?.responseMessage,'success')
                 navigate(`/regulationtypes`)
             }).catch((error) => {
                 showToast(error?.data?.errorMessage,"error")
@@ -59,14 +59,13 @@ export default function RegulationTypeComponent() {
             }
 
             saveRegulationType(regulationType).then((response)=> {              
-                // showToast(response.data?.responseMessage,'success')
+                showToast(response.data?.responseMessage,'success')
                 navigate(`/regulationtypes`)
             }).catch((error) => {
-                // showToast(error?.data?.errorMessage,"error")
+                showToast(error?.data?.errorMessage,"error")
                 navigate(`/regulationtypes`)
             })
         }
-
     }
 
     return(
@@ -75,10 +74,10 @@ export default function RegulationTypeComponent() {
             <Formik 
                 initialValues={ { regulation_type_id, regulation_type   } }
                 enableReinitialize={true}
+                onSubmit={onSubmit}
                 validate={validate}
                 validateOnBlur={false}
                 validateOnChange={false}
-                onSubmit={onSubmit}
             >
             {
                 (props)=>(
@@ -93,16 +92,14 @@ export default function RegulationTypeComponent() {
                                 name="regulation_type"
                                 variant="standard"
                                 label="Regulation Type"
-                                values={props.values.regulation_type}
+                                value={props.values.regulation_type}
                                 onChange={props.handleChange}
                                 onBlur={props.handleBlur}
                                 error={props.touched.regulation_type && Boolean(props.errors.regulation_type) }
                                 helperText={<ErrorMessage name="regulation_type" />}
                                 fullWidth
-                            >
+                            />
 
-                            </TextField>                             
-                        
                             <Box className="btnvalue">
                                 <Button
                                     type="submit"
@@ -117,8 +114,7 @@ export default function RegulationTypeComponent() {
                     </Form>
                 )
             }
-                 
-            </Formik>
-        </div>
-    )
+        </Formik>
+    </div>
+   )
 }

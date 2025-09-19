@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography"
 import Button from "@mui/material/Button"
 import { useNavigate } from "react-router-dom"
 import { Box } from "@mui/material";
+import EditIcon from '@mui/icons-material/Edit';
 
 export default function ViewNotificationComponent() {
 
@@ -26,11 +27,11 @@ export default function ViewNotificationComponent() {
             console.log(response)
             setNotificationList(response.data)
         }).catch((error) => {
-            console.log('No data found',error)
+            console.log('No Data Found',error)
             showToast(error.response.data.errorMessage,"error")
         })
 
-    })
+    },[])
 
     function updateNotificationById(id) {
         navigate(`/notification/${id}`)
@@ -44,8 +45,9 @@ export default function ViewNotificationComponent() {
     return(
         <div className="container">
             <Box mb={2}>
-                <Typography>View Notifications</Typography>
-                <Button variant="contained" color="secondary" onClick={addNotification}>Add notification</Button>
+                <Typography variant="h4" gutterBottom>View Notifications
+                    <Button style={{ float : 'right'}} variant="contained" color="secondary" onClick={addNotification}> Add notification</Button>
+                </Typography>
             </Box>
             <table ref={tableRef} className="table table-hover table-striped">
             <thead>
@@ -73,7 +75,7 @@ export default function ViewNotificationComponent() {
                                 <td>{notification.notification_description}</td>
                                <td>{notification.notification_start_date}</td>
                                 <td>{notification.notification_end_date}</td>
-                                <td><Button variant="contained" color="info" onClick={()=>updateNotificationById(notification.notification_id)}> Update </Button> </td>
+                                <td><Button variant="contained" color="info" onClick={()=>updateNotificationById(notification.notification_id)}><EditIcon /> Update </Button> </td>
                             </tr>
                         ))
                     )
