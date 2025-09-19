@@ -37,6 +37,10 @@ export default function ViewRegulationTypeComponent() {
     function addRegulationType(){
         navigate(`/regulationtype/-1`)
     }
+
+    function addRegulation() {
+        navigate(`/regulation/-1`)
+    }
     
     function updateRegulationType(id) {
         navigate(`/regulationtype/${id}`)
@@ -47,6 +51,9 @@ export default function ViewRegulationTypeComponent() {
         <Box>
             <Typography variant="h4" gutterBottom >View Regulation Types</Typography>
             <Button variant="contained" onClick={addRegulationType} color="secondary" >Add Regulation Type</Button>
+
+            <Button variant="contained" sx={{ m : '5'}} onClick={addRegulation} color="success" >Add Regulation</Button>
+
         </Box>
         <table className="table table-striped table-hover" ref={tableRef}>
             <thead>

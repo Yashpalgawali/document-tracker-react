@@ -6,6 +6,7 @@ import { ToastContainer } from "react-toastify";
 import ViewNotificationComponent from "./Components/NotificationComponent/ViewNotificationComponent";
 import NotificationComponent from "./Components/NotificationComponent/NotificationComponent";
 import RegisterVendorComponent from "./Components/VendorComponents/RegisterVendorComponent";
+import RegulationComponent from "./Components/RegulationComponents/RegulationComponent";
 
 export default function DocumentTracker(){
     return (
@@ -32,6 +33,12 @@ export default function DocumentTracker(){
             <Routes>
                 <Route element= { <RegisterVendorComponent /> } path="/register/vendor"></Route>
             </Routes>
+
+             <Routes>
+                <Route element= { <RegulationComponent /> } path="/regulation/:id"></Route>
+            </Routes>
+
+           
 
         </BrowserRouter >
         </>
