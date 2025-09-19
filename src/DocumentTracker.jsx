@@ -5,11 +5,12 @@ import ViewRegulationTypeComponent from "./Components/RegulationTypeComponent/Vi
 import { ToastContainer } from "react-toastify";
 import ViewNotificationComponent from "./Components/NotificationComponent/ViewNotificationComponent";
 import NotificationComponent from "./Components/NotificationComponent/NotificationComponent";
+import RegisterVendorComponent from "./Components/VendorComponents/RegisterVendorComponent";
 
 export default function DocumentTracker(){
     return (
         <>
-       
+
         <BrowserRouter basename="documenttracker">
             <HeaderComponent />
             <ToastContainer autoClose={2500} position="top-center"></ToastContainer>
@@ -27,6 +28,11 @@ export default function DocumentTracker(){
             <Routes>
                 <Route element= { <NotificationComponent /> } path="/notification/:id"></Route>
             </Routes>
+
+            <Routes>
+                <Route element= { <RegisterVendorComponent /> } path="/register/vendor"></Route>
+            </Routes>
+
         </BrowserRouter >
         </>
     )

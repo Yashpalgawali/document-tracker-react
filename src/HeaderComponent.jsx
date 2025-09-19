@@ -32,7 +32,12 @@ export default function HeaderComponent(){
                                      <Link className="nav-link" to="/viewnotifications">Notifications</Link>
                                 }
                                 </li>
-                                
+                                 <li className="nav-item fs-5">
+                                {  
+                                     <Link className="nav-link" to="/register/vendor">Register Vendor</Link>
+                                }
+                                </li>
+
                               </ul>
                             </div>
                         </nav>
