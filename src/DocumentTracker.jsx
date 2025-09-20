@@ -36,6 +36,10 @@ export default function DocumentTracker(){
             </Routes>
 
              <Routes>
+                <Route element= { <RegisterVendorComponent /> } path="/vendor/:id"></Route>
+            </Routes>
+
+             <Routes>
                 <Route element= { <RegulationComponent /> } path="/regulation/:id"></Route>
             </Routes>
 

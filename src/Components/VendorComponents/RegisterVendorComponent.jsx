@@ -1,8 +1,10 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, FormHelperText, TextField, Typography } from "@mui/material";
 import { ErrorMessage, Form, Formik } from "formik";
-import { useState } from "react";
-import { registerVendor } from "../../api/VendorApi";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getVendorById, registerVendor } from "../../api/VendorApi";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+
+import Select from 'react-select';
 
 import { showToast } from "../SharedComponent/showToast";
 import { isUserEmailUsed } from "../../api/UserApi";
@@ -33,11 +35,40 @@ export default function RegisterVendorComponent() {
     const [password, setPassword] = useState('')
     const [cnfpassword, setCnfPassword] = useState('')
     const [username, setUsername] = useState('')
+    const [enabled,setEnabled] = useState(1)
+    const [enabledList,setEnabledList] = useState([])
+
+    const [isActive,setIsActive] = useState(false)
 
     const navigate = useNavigate()
-
+    const location = useLocation()
     const [btnvalue,setBtnValue] = useState('Register Vendor')
 
+    
+    const {id} = useParams()
+
+    useEffect(() => {
+        if(id == -1 ) {
+            setBtnValue('Add Vendor')
+        }
+        if(id != -1 && id != undefined) {
+            setBtnValue('Update Vendor')
+            getVendorById(id).then((response) => {
+                setVendorName(response.data.vendor_name)
+                setVendorEmail(response.data.vendor_email)
+                setEnabled(response.data.enabled)
+                if(response.data.enabled == 1) {
+                    setIsActive(true)
+                }
+                setEnabledList([
+                    { enabled : 1, status : 'Active' },
+                    { enabled : 2, status : 'InActive' }
+                ])
+            })
+        }
+        
+    }, [])
+ 
     function validate(values) {
         let errors= {}
 
@@ -72,6 +103,7 @@ export default function RegisterVendorComponent() {
         let exists = checkEmailExists(values.email)
         alert(exists)
         console.log(exists)
+
         let vendor = {
             vendor_name : values.vendor_name,
             vendor_email : values.vendor_email,
@@ -101,28 +133,28 @@ export default function RegisterVendorComponent() {
                 onSubmit={async (values, { setFieldError }) => {
                 const exists = await checkEmailExists(values.vendor_email);
                 if (exists) {
-                setFieldError("vendor_email", "Email already exists. Use Another email ");
-                return; // 🚫 stop submission
-                }
+                    setFieldError("vendor_email", "Email already exists. Use Another email ");
+                    return; // 🚫 stop submission
+                } 
 
                 // ✅ proceed with actual submit
                 await onSubmit(values);
             }}
             >
             {
-                (props) => (
+                  ({ setFieldValue, setFieldError, values, handleChange, handleBlur,  touched, errors }) => (
                     <Box>
                         <Form>
                             <TextField 
                                 id="vendor_name"
                                 name="vendor_name"
-                                value={props.values.vendor_name}
-                                onBlur={props.handleBlur}
-                                onChange={props.handleChange}
+                                value={values.vendor_name}
+                                onBlur={handleBlur}
+                                onChange={handleChange}
                                 label="Vendor Name"
                                 variant="standard"
                                 helperText={ <ErrorMessage name="vendor_name"/>}
-                                error={props.touched.vendor_name && Boolean(props.errors.vendor_name) }
+                                error={touched.vendor_name && Boolean(errors.vendor_name) }
                                 fullWidth
                             />
 
@@ -130,14 +162,14 @@ export default function RegisterVendorComponent() {
                                 id="vendor_email"
                                 type="email"
                                 name="vendor_email"
-                                value={props.values.vendor_email}
-                                // onBlur={props.handleBlur}
+                                value={values.vendor_email}
+                              
                                 onBlur={async (e)=> {
-                                    props.handleBlur(e) // Keep Formiks default blur
+                                    handleBlur(e) // Keep Formiks default blur
                                     if(e.target.value) {
                                         const exists = await checkEmailExists(e.target.value)
                                         if(exists) {
-                                            props.setFieldError("vendor_email","Email is already used. Please use another email")
+                                            setFieldError("vendor_email","Email is already used. Please use another email")
                                         }
                                          
                                     }
@@ -145,14 +177,14 @@ export default function RegisterVendorComponent() {
                                 }
                                 onChange={
                                     async (e) =>{
-                                        props.handleChange(e)
+                                        handleChange(e)
                                         if(e.target.value) {
                                             const exists = await checkEmailExists(e.target.value) 
                                             if(exists) {
-                                                props.setFieldError("vendor_email", "Email is already used")
+                                                setFieldError("vendor_email", "Email is already used")
                                             }
                                             else {
-                                                props.setFieldError("vendor_email",undefined)
+                                                setFieldError("vendor_email",undefined)
                                             }
                                         }                                         
                                     }
@@ -160,20 +192,20 @@ export default function RegisterVendorComponent() {
                                 label="Vendor Email"
                                 variant="standard"
                                 helperText={ <ErrorMessage name="vendor_email"/>}
-                                error={props.touched.vendor_email && Boolean(props.errors.vendor_email) }
+                                error={touched.vendor_email && Boolean(errors.vendor_email) }
                                 fullWidth
                             />
 
                             <TextField 
                                 id="username"
                                 name="username"
-                                value={props.values.username}
-                                onBlur={props.handleBlur}
-                                onChange={props.handleChange}
+                                value={values.username}
+                                onBlur={handleBlur}
+                                onChange={handleChange}
                                 label="Vendor Username"
                                 variant="standard"
                                 helperText={ <ErrorMessage name="username"/>}
-                                error={props.touched.username && Boolean(props.errors.username) }
+                                error={touched.username && Boolean(errors.username) }
                                 fullWidth
                             />
 
@@ -181,13 +213,13 @@ export default function RegisterVendorComponent() {
                                 id="password"
                                 name="password"
                                 type="password"
-                                value={props.values.password}
-                                onBlur={props.handleBlur}
-                                onChange={props.handleChange}
+                                value={values.password}
+                                onBlur={handleBlur}
+                                onChange={handleChange}
                                 label="Password"
                                 variant="standard"
                                 helperText={ <ErrorMessage name="password"/>}
-                                error={props.touched.password && Boolean(props.errors.password) }
+                                error={touched.password && Boolean(errors.password) }
                                 fullWidth
                             />
 
@@ -195,21 +227,49 @@ export default function RegisterVendorComponent() {
                                 id="cnfpassword"
                                 name="cnfpassword"
                                 type="password"
-                                value={props.values.cnfpassword}
-                                onBlur={props.handleBlur}
-                                onChange={props.handleChange}
+                                value={values.cnfpassword}
+                                onBlur={handleBlur}
+                                onChange={handleChange}
                                 label="Confirm Password"
                                 variant="standard"
                                 helperText={ <ErrorMessage name="cnfpassword"/>}
-                                error={props.touched.cnfpassword && Boolean(props.errors.cnfpassword) }
+                                error={touched.cnfpassword && Boolean(errors.cnfpassword) }
                                 fullWidth
                             />
-
-                            <Button
-                            type="submit"
-                            variant="contained"
-                            color="primary"
-                            >{btnvalue}</Button>
+                            {
+                                isActive &&  
+                                <>
+                                  <Select
+                               
+                                    hideSelectedOptions={true}
+                                                                
+                                    name="reguenabledlation_type"
+                                    options={enabledList.map(enabled => ({
+                                        value: enabled.enabled,
+                                        label: enabled.status
+                                    }))}
+                                    value= {
+                                        enabledList
+                                        .map(enabled => ({ value: enabled.enabled, label: enabled.status }))
+                                        .find(option => option.value === values.status) || null
+                                    }
+                                    onChange={(option) => setFieldValue('enabled', option ? option.value : '')}
+                                    placeholder="Set Status of Vendor"
+                                    
+                                    />                                
+                                    <FormHelperText error={touched.regulation_type && Boolean(errors.regulation_type)}>
+                                    <ErrorMessage name="enabled" />
+                                    </FormHelperText>
+                              </>
+                            }
+                            <Box>
+                                <Button
+                                sx={ { mt : '5px'} }
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                >{btnvalue}</Button>
+                            </Box>
                         </Form>
                     </Box>
                 )

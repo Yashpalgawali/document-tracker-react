@@ -52,7 +52,7 @@ export default function ViewRegulationTypeComponent() {
             <Typography variant="h4" gutterBottom >View Regulation Types</Typography>
             <Button variant="contained" onClick={addRegulationType} color="secondary" >Add Regulation Type</Button>
 
-            <Button variant="contained" sx={{ m : '5'}} onClick={addRegulation} color="success" >Add Regulation</Button>
+            <Button variant="contained" sx={{ m : '5px'}} onClick={addRegulation} color="success" >Add Regulation</Button>
 
         </Box>
         <table className="table table-striped table-hover" ref={tableRef}>
@@ -67,7 +67,7 @@ export default function ViewRegulationTypeComponent() {
                 {
                     regulationTypeList.length == 0 ? (
                         <tr>
-                            <td colSpan={3}>No data To display</td>
+                            <td colSpan={3}>No Data To Display</td>
                         </tr>
                     ) : (
                     regulationTypeList.map((regtype,index)=>(
