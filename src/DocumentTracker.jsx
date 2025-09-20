@@ -7,6 +7,7 @@ import ViewNotificationComponent from "./Components/NotificationComponent/ViewNo
 import NotificationComponent from "./Components/NotificationComponent/NotificationComponent";
 import RegisterVendorComponent from "./Components/VendorComponents/RegisterVendorComponent";
 import RegulationComponent from "./Components/RegulationComponents/RegulationComponent";
+import ViewVendorsComponent from "./Components/VendorComponents/ViewVendorsComponent";
 
 export default function DocumentTracker(){
     return (
@@ -36,6 +37,10 @@ export default function DocumentTracker(){
 
              <Routes>
                 <Route element= { <RegulationComponent /> } path="/regulation/:id"></Route>
+            </Routes>
+
+              <Routes>
+                <Route element= { <ViewVendorsComponent /> } path="/viewvendors"></Route>
             </Routes>
 
            

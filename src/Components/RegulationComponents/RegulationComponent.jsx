@@ -12,7 +12,8 @@ export default function RegulationComponent() {
     const [regulationTypeList, setRegulationTypeList] = useState([])
     const [regulation_name,setRegulationName] = useState('')
     const [regulation_description,setRegulationDescription] = useState('')
-    
+    const [regulation_type,setRegulationType] = useState('')
+
     const [btnValue,setBtnValue] = useState('Add Regulation')
 
     const {id} = useParams()
@@ -70,7 +71,7 @@ export default function RegulationComponent() {
                             variant="standard"
                             id="regulation_name"
                             name="regulation_name"
-                            value={props.values.regulation_name}
+                            value={values.regulation_name}
                             label="Regulation Name"
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -92,25 +93,28 @@ export default function RegulationComponent() {
                             fullWidth
                         />
 
-                        <Select   
-                            styles={customStyles}                                     
-                            name="regulation_type"
-                            options={trainingList.map(training => ({
-                                value: training.training_id,
-                                label: training.training_name
-                            }))}
-                            value={
-                                trainingList
-                                    .map(training => ({ value: training.training_id, label: training.training_name }))
-                                    .find(option => option.value === values.training_ids) || null
-                            }
-                                onChange={(option) => setFieldValue('training_ids', option ? option.value : '')}
-                                placeholder="Select Training"
-                        /> 
-
-                    <FormHelperText error={touched.training_ids && Boolean(errors.training_ids)}>
-                    <ErrorMessage name="training_ids" />
-                    </FormHelperText>  
+                        <Select
+                               
+                                hideSelectedOptions={true}
+                                                               
+                                name="regulation_type"
+                                options={regulationTypeList.map(regtype => ({
+                                    value: regtype.regulation_type_id,
+                                    label: regtype.regulation_type
+                                }))}
+                                value= {
+                                    regulationTypeList
+                                    .map(regtype => ({ value: regtype.regulation_type_id, label: regtype.regulation_type }))
+                                    .find(option => option.value === values.regulation_type) || null
+                                }
+                                onChange={(option) => setFieldValue('regulation_type', option ? option.value : '')}
+                                placeholder="Select Regulation Type"
+                                
+                            />                                
+                            <FormHelperText error={touched.regulation_type && Boolean(errors.regulation_type)}>
+                            <ErrorMessage name="regulation_type" />
+                            </FormHelperText>
+                       
                     </Form>
                 )
             }    
