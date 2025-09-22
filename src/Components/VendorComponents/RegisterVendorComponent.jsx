@@ -1,7 +1,7 @@
 import { Box, Button, FormHelperText, TextField, Typography } from "@mui/material";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useEffect, useState } from "react";
-import { getVendorById, registerVendor } from "../../api/VendorApi";
+import { getVendorById, registerVendor, updateVendor } from "../../api/VendorApi";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import Select from 'react-select';
@@ -23,7 +23,6 @@ const checkEmailExists = async (email) => {
         }
         console.error("Unexpected error while checking email:", err);
         return false; // fail-safe (treat as not in use, or you can return true if you prefer stricter validation)
-
     }
 }
 
@@ -37,13 +36,13 @@ export default function RegisterVendorComponent() {
     const [username, setUsername] = useState('')
     const [enabled,setEnabled] = useState(1)
     const [enabledList,setEnabledList] = useState([])
+    const [oldPassword,setOldPassword] = useState('')
 
     const [isActive,setIsActive] = useState(false)
 
     const navigate = useNavigate()
     const location = useLocation()
     const [btnvalue,setBtnValue] = useState('Register Vendor')
-
     
     const {id} = useParams()
 
@@ -54,9 +53,13 @@ export default function RegisterVendorComponent() {
         if(id != -1 && id != undefined) {
             setBtnValue('Update Vendor')
             getVendorById(id).then((response) => {
+                console.log(response.data)
                 setVendorName(response.data.vendor_name)
                 setVendorEmail(response.data.vendor_email)
                 setEnabled(response.data.enabled)
+                setUsername(response.data.username)
+                setOldPassword(response.data.password)
+                setPassword(response.data.password)
                 if(response.data.enabled == 1) {
                     setIsActive(true)
                 }
@@ -80,9 +83,7 @@ export default function RegisterVendorComponent() {
             errors.vendor_email = 'Vendor Email Can\'t be blank'
         }
 
-        if(values.vendor_email=='') {
-            errors.vendor_email = 'Vendor Email Can\'t be blank'
-        }
+        
 
         if(values.password=='') {
             errors.password = 'Password can\'t be blank'
@@ -104,19 +105,57 @@ export default function RegisterVendorComponent() {
         alert(exists)
         console.log(exists)
 
-        let vendor = {
-            vendor_name : values.vendor_name,
-            vendor_email : values.vendor_email,
-            username : values.username,
-            password : values.password
+        var vendor = {
+                vendor_name : values.vendor_name,
+                vendor_email : values.vendor_email,
+                username : values.username,
+                password : oldPassword
         }
-        registerVendor(vendor).then((response)=> {              
-                showToast(response.data?.responseMessage,'success')
-                navigate(`/regulationtypes`)
-            }).catch((error) => {
-                showToast(error?.data?.errorMessage,"error")
-                navigate(`/regulationtypes`)
-            })
+        
+        // if(values.password == '')
+        // {
+        //     var vendor = {
+        //     vendor_name : values.vendor_name,
+        //     vendor_email : values.vendor_email,
+        //     username : values.username,
+        //     password : oldPassword
+        //    }    
+        // }
+        // else {
+        //     var vendor = {
+        //         vendor_name : values.vendor_name,
+        //         vendor_email : values.vendor_email,
+        //         username : values.username,
+        //         password : values.password
+        //     }
+        // }
+        
+        vendor = {...vendor , vendor_id : id} 
+        
+        console.log('Vendor Object is ',vendor)
+
+        // if(id == -1)
+        // {
+            
+        //     registerVendor(vendor).then((response)=> {              
+        //             showToast(response.data?.responseMessage,'success')
+        //             navigate(`/viewvendors`)
+        //         }).catch((error) => {
+        //             showToast(error?.data?.errorMessage,"error")
+        //             navigate(`/viewvendors`)
+        //         })
+        // }
+        // else {
+        //     vendor = {...vendor , vendor_id : id} 
+        //      updateVendor(vendor).then((response)=> {              
+        //             showToast(response.data?.responseMessage,'success')
+        //             navigate(`/viewvendors`)
+        //         }).catch((error) => {
+        //             showToast(error?.data?.errorMessage,"error")
+        //             navigate(`/viewvendors`)
+        //         })
+        // }
+
     }
 
     return(
@@ -125,7 +164,7 @@ export default function RegisterVendorComponent() {
                 <Typography variant="h4" gutterBottom>{btnvalue}</Typography>
             </Box>
             <Formik
-                initialValues={ { vendor_name ,vendor_email,vendor_id , password , username,cnfpassword }}
+                initialValues={ { vendor_name ,vendor_email,vendor_id , password , username ,cnfpassword, enabled }}
                 enableReinitialize={true}
                 validate={validate}
                 validateOnBlur={false}
@@ -163,7 +202,6 @@ export default function RegisterVendorComponent() {
                                 type="email"
                                 name="vendor_email"
                                 value={values.vendor_email}
-                              
                                 onBlur={async (e)=> {
                                     handleBlur(e) // Keep Formiks default blur
                                     if(e.target.value) {
@@ -171,12 +209,11 @@ export default function RegisterVendorComponent() {
                                         if(exists) {
                                             setFieldError("vendor_email","Email is already used. Please use another email")
                                         }
-                                         
                                     }
                                   }
                                 }
                                 onChange={
-                                    async (e) =>{
+                                    async (e) => {
                                         handleChange(e)
                                         if(e.target.value) {
                                             const exists = await checkEmailExists(e.target.value) 
@@ -196,7 +233,7 @@ export default function RegisterVendorComponent() {
                                 fullWidth
                             />
 
-                            <TextField 
+                            <TextField
                                 id="username"
                                 name="username"
                                 value={values.username}
@@ -239,27 +276,28 @@ export default function RegisterVendorComponent() {
                             {
                                 isActive &&  
                                 <>
-                                  <Select
-                               
-                                    hideSelectedOptions={true}
-                                                                
-                                    name="reguenabledlation_type"
-                                    options={enabledList.map(enabled => ({
-                                        value: enabled.enabled,
-                                        label: enabled.status
-                                    }))}
-                                    value= {
-                                        enabledList
-                                        .map(enabled => ({ value: enabled.enabled, label: enabled.status }))
-                                        .find(option => option.value === values.status) || null
-                                    }
-                                    onChange={(option) => setFieldValue('enabled', option ? option.value : '')}
-                                    placeholder="Set Status of Vendor"
-                                    
+                                   <Select
+                                                                 
+                                        hideSelectedOptions={true}
+                                                                        
+                                        name="enabled"
+                                        options={enabledList.map(enb => ({
+                                            value: enb.enabled,
+                                            label: enb.status
+                                        }))}
+                                        value= {
+                                            enabledList
+                                            .map(enb => ({ value: enb.enabled, label: enb.status }))
+                                            .find(option => option.value === values.enabled) || null
+                                        }
+                                        onChange={(option) => setFieldValue('enabled', option ? option.value : '')}
+                                        placeholder="Select Vendor Status"
+                                        
                                     />                                
-                                    <FormHelperText error={touched.regulation_type && Boolean(errors.regulation_type)}>
+                                    <FormHelperText error={touched.enabled && Boolean(errors.enabled)}>
                                     <ErrorMessage name="enabled" />
                                     </FormHelperText>
+                                                         
                               </>
                             }
                             <Box>

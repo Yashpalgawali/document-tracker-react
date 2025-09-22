@@ -35,8 +35,8 @@ export default function RegulationComponent() {
     }
 
 
-    useEffect(() => { 
-        
+    useEffect(() => {
+
         getAllRegulationTypes().then((response) => {
             setRegulationTypeList(response.data)
         })
@@ -45,19 +45,18 @@ export default function RegulationComponent() {
             setBtnValue('Update Regulation')
             getRegulationById(id).then((response) => {
                 setRegulationName(response.data.regulation_name)
+                setRegulationDescription(response.data.regulation_description)
             })
         }
+    }, [])
 
-    },[])
-
-    return(
+    return (
         <div className="container">
             <Box>
                 <Typography variant="h4" gutterBottom>{btnValue}</Typography>
             </Box>
-
             <Formik
-                initialValues={ { regulation_name , regulation_description, regulation_type : regulation_type ? regulation_type : null } }
+                initialValues= { { regulation_name , regulation_description, regulation_type : regulation_type ? regulation_type : null } }
                 enableReinitialize={true}
                 validate={validate}
                 validateOnBlur={false}
