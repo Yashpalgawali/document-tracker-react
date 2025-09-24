@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { getAllRegulationTypes } from "../../api/RegulationTypeApi"
 import { useNavigate, useParams } from "react-router-dom"
 import { getRegulationById } from "../../api/RegulationApi" 
-import { Box, Button, FormHelperText, TextField, Typography } from "@mui/material"
+import { alertTitleClasses, Box, Button, FormHelperText, TextField, Typography } from "@mui/material"
 import { ErrorMessage, Form, Formik } from "formik"
 
 import Select from 'react-select';
@@ -93,56 +93,57 @@ export default function RegulationComponent() {
         }
     }, [id])
 
-    function getNextRenewalDate(issued_date) {
-        setNextRenewalDate('')
-
-        let frequency_duration = sessionStorage.getItem('frequency')
-        let formatted_issued_date = dayjs(issued_date).format('DD-MM-YYYY')
-
-        const d = dayjs(issued_date)
+    function getNextRenewalDate(issued_date,setFieldValue) {
         
-        let [date,month,year] = [d.date(), d.month()+1, d.year() ]
-        
-        // if(date<=9) {
-        //     date = "0"+date
-        // }
-        // if(month<=9) {
-        //     month ="0"+month
-        // }
-        
-        let leapyear =  false
-        if(year % 400 == 0 || ( year % 4 ===0 && year % 100 !=0) ) {
-            leapyear = true
-        }
+        let frequency = sessionStorage.getItem('frequency')
+        alert('Frequency = '+frequency)
+        // Convert to dayjs object
+        const nextRenewalDate = dayjs(issued_date, "DD-MM-YYYY");
+        let cur_date = nextRenewalDate.date()
+        let cur_month = nextRenewalDate.month()+1
+        let cur_year = nextRenewalDate.year()
 
-        
-        alert('date = '+date+"\n Month "+month+"\n Year "+year)
-        if(frequency_duration == 1 ) {
+        if(frequency==1) {
 
-            if(month==12) {
-
-                alert('Next Year date is '+date+'-01-'+(year+1))
-                setNextRenewalDate(date+'-'+'01'+'-'+(year+1))
-
+            if(cur_month == 12) {
+                let newDate = String(cur_date).padStart(2,"0")+"-"+String("1").padStart(2,"0")+"-"+(cur_year+1)
+                setFieldValue("next_renewal_date",newDate)                
             }
-
             else {
-                let current_month_days = returnDaysOfMonth(month,year)
-                let next_month_days = returnDaysOfMonth((month+1),year)
-               
-                if(current_month_days>=next_month_days) {
-                    setNextRenewalDate(date+'-'+(month+1)+'-'+year)
+              
+                let current_month_days = returnDaysOfMonth(cur_month,cur_year)
+                let next_month_days = returnDaysOfMonth((cur_month+1),cur_year)
+                
+                 
+                if(next_month_days < current_month_days ) {
+                    if(cur_date > next_month_days) {
+                        let diff = current_month_days - next_month_days
+
+                        let newDate = String(diff).padStart(2,"0")+"-"+String(cur_month+2).padStart(2,"0")+"-"+(cur_year)
+                        setFieldValue("next_renewal_date",newDate)    
+                    }
+                    else {
+                         let newDate = String(cur_date).padStart(2,"0")+"-"+String(cur_month+1).padStart(2,"0")+"-"+(cur_year)
+                        setFieldValue("next_renewal_date",newDate)  
+                    }
+                }
+                else {
+                      let newDate = String(cur_date).padStart(2,"0")+"-"+String(cur_month+1).padStart(2,"0")+"-"+(cur_year)
+                      alert(newDate)
+                      setFieldValue("next_renewal_date",newDate)    
                 }
             }
-             
-            
+
         }
-      
+
+
+
+       
 
     }
 
     function returnDaysOfMonth(month,year) {
-        const daysInMonth = dayjs(`${year}-${month}-01`).daysInMonth()
+        const daysInMonth = dayjs(`${year}-${String(month).padStart(2, "0") }-01`).daysInMonth()
         return daysInMonth
     }
 
@@ -155,8 +156,8 @@ export default function RegulationComponent() {
             <Formik
                 initialValues= { { regulation_name , regulation_description, 
                                    regulation_type : regulation_type ? regulation_type : null,
-                                   regulation_issued_date : regulation_issued_date ? dayjs(regulation_issued_date) : null,
-                                   next_renewal_date : next_renewal_date ? dayjs(next_renewal_date) : null,
+                                   regulation_issued_date : regulation_issued_date ? dayjs(regulation_issued_date) : "",
+                                   next_renewal_date : next_renewal_date ? dayjs(next_renewal_date) : "",
                                    regulation_frequency :regulation_frequency ? regulation_frequency : null
                                 } }
                 enableReinitialize={true}
@@ -248,12 +249,14 @@ export default function RegulationComponent() {
                                     sx={ {  width : '40ch'} }
                                     format="DD-MM-YYYY"
                                     label="Regulation Issue Date"
-                                    value={values.regulation_issued_date}
+                                    value={values.regulation_issued_date ? dayjs(values.regulation_issued_date,"DD-MM-YYYY") : null}
                                     onChange={(date) => 
-                                        {
-                                            setFieldValue('regulation_issued_date', date)
-                                            
-                                            getNextRenewalDate(date)
+                                        {   
+                                            const formatted_date = date ? date .format("DD-MM-YYYY") : ""
+                                            setFieldValue('regulation_issued_date', formatted_date)
+                                            alert('date changed')
+                                            getNextRenewalDate(formatted_date,setFieldValue)
+                                             
                                         }
                                     }
                                     slotProps={{
@@ -267,8 +270,10 @@ export default function RegulationComponent() {
                                     sx={ { marginRight : '5px' ,width : '40ch'} }
                                     format="DD-MM-YYYY"
                                     label="Next Renewal Date"
-                                    value={values.next_renewal_date}
-                                    onChange={(date) => setFieldValue('next_renewal_date', date)}
+                                    value={
+                                            values.next_renewal_date ? dayjs(values.next_renewal_date,"DD-MM-YYYY") : null
+                                        }
+                                    onChange={(date) => setFieldValue('next_renewal_date', date ? date.format("DD-MM-YYYY") : "" )}
                                     slotProps={{
                                     textField: { 
                                         error: touched.next_renewal_date && Boolean(errors.next_renewal_date),
