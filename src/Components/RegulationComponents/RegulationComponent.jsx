@@ -96,7 +96,7 @@ export default function RegulationComponent() {
     function getNextRenewalDate(issued_date,setFieldValue) {
         
         let frequency = sessionStorage.getItem('frequency')
-        alert('Frequency = '+frequency)
+        
         // Convert to dayjs object
         const nextRenewalDate = dayjs(issued_date, "DD-MM-YYYY");
         let cur_date = nextRenewalDate.date()
@@ -106,30 +106,33 @@ export default function RegulationComponent() {
         if(frequency==1) {
 
             if(cur_month == 12) {
-                let newDate = String(cur_date).padStart(2,"0")+"-"+String("1").padStart(2,"0")+"-"+(cur_year+1)
+                // let newDate = String(cur_date).padStart(2,"0")+"-"+String("1").padStart(2,"0")+"-"+(cur_year+1)
+                let newDate = setNextRenewalDateFunction(cur_date,("1"),(cur_year+1))
                 setFieldValue("next_renewal_date",newDate)                
             }
             else {
               
                 let current_month_days = returnDaysOfMonth(cur_month,cur_year)
-                let next_month_days = returnDaysOfMonth((cur_month+1),cur_year)
-                
-                 
+                let next_month_days = returnDaysOfMonth((cur_month+1),cur_year)                
+                  
                 if(next_month_days < current_month_days ) {
+                         
                     if(cur_date > next_month_days) {
-                        let diff = current_month_days - next_month_days
-
-                        let newDate = String(diff).padStart(2,"0")+"-"+String(cur_month+2).padStart(2,"0")+"-"+(cur_year)
+                        let diff = cur_date - next_month_days
+                        alert('difference is '+diff)
+                        // let newDate = String(diff).padStart(2,"0")+"-"+String(cur_month+2).padStart(2,"0")+"-"+(cur_year)
+                        let newDate = setNextRenewalDateFunction(diff,(cur_month+2),cur_year)
                         setFieldValue("next_renewal_date",newDate)    
                     }
                     else {
-                         let newDate = String(cur_date).padStart(2,"0")+"-"+String(cur_month+1).padStart(2,"0")+"-"+(cur_year)
-                        setFieldValue("next_renewal_date",newDate)  
+                          //let newDate = String(cur_date).padStart(2,"0")+"-"+String(cur_month+1).padStart(2,"0")+"-"+(cur_year)
+                          let newDate = setNextRenewalDateFunction(cur_date,(cur_month+1),cur_year)
+                          setFieldValue("next_renewal_date",newDate)  
                     }
                 }
                 else {
-                      let newDate = String(cur_date).padStart(2,"0")+"-"+String(cur_month+1).padStart(2,"0")+"-"+(cur_year)
-                      alert('Next month '+newDate)
+                      //let newDate = String(cur_date).padStart(2,"0")+"-"+String(cur_month+1).padStart(2,"0")+"-"+(cur_year)
+                      let newDate = setNextRenewalDateFunction(cur_date,(cur_month+1),cur_year)
                       setFieldValue("next_renewal_date",newDate)    
                 }
             }
@@ -148,20 +151,22 @@ export default function RegulationComponent() {
                 let diff = currentYearDays - nextYearDays
 
                 if(cur_date > nextYearDays) {
-                    let newDate = String(diff).padStart(2,"0")+"-"+String(cur_month+1).padStart(2,"0")+"-"+(next_year)
+                    //let newDate = String(diff).padStart(2,"0")+"-"+String(cur_month+1).padStart(2,"0")+"-"+(next_year)
+                    let newDate = setNextRenewalDateFunction(cur_date,(cur_month+1),cur_year)
                     setFieldValue("next_renewal_date",newDate)
                 }
                 else {
-                    let newDate = String(cur_date).padStart(2,"0")+"-"+String(cur_month).padStart(2,"0")+"-"+(next_year)                
+                    //let newDate = String(cur_date).padStart(2,"0")+"-"+String(cur_month).padStart(2,"0")+"-"+(next_year)                
+                    let newDate = setNextRenewalDateFunction(cur_date,(cur_month),cur_year)
                     setFieldValue("next_renewal_date",newDate)
                 }
                 
             }
             else {
-                let newDate = String(cur_date).padStart(2,"0")+"-"+String(cur_month).padStart(2,"0")+"-"+(next_year)
+                //let newDate = String(cur_date).padStart(2,"0")+"-"+String(cur_month).padStart(2,"0")+"-"+(next_year)
+                let newDate = setNextRenewalDateFunction(cur_date,(cur_month),cur_year)
                 setFieldValue("next_renewal_date",newDate)
-            }
-            
+            }            
         }
 
         if(frequency == 2) {
@@ -170,32 +175,46 @@ export default function RegulationComponent() {
 
             if(cur_month==10 ) {
                 next_month_days = returnDaysOfMonth(("1"),(cur_year+1))
+                let newDate = setNextRenewalDateFunction(cur_date,(cur_month+3),cur_year)
+                //let newDate = String(cur_date).padStart(2,"0")+"-"+String(cur_month+3).padStart(2,"0")+"-"+(cur_year)
+                setFieldValue("next_renewal_date",newDate)
             }
             if(cur_month==11 ) {
                 next_month_days = returnDaysOfMonth(("2"),(cur_year+1))
+                let newDate = setNextRenewalDateFunction(cur_date,(cur_month+3),cur_year)
+                setFieldValue("next_renewal_date",newDate)
             }
             if(cur_month==12 ) {
                 next_month_days = returnDaysOfMonth(("3"),(cur_year+1))
+                let newDate = setNextRenewalDateFunction(cur_date,(cur_month+3),cur_year)
+                setFieldValue("next_renewal_date",newDate)
             }
-
+           
             else {
                 next_month_days = returnDaysOfMonth((cur_month+3),(cur_year))
 
                  if(next_month_days < current_month_days ) {
                     if(cur_date > next_month_days) {
                         let diff = cur_date - next_month_days
-                         let newDate = String(diff).padStart(2,"0")+"-"+String(cur_month+4).padStart(2,"0")+"-"+(cur_year)
+                        let newDate = setNextRenewalDateFunction(cur_date,(cur_month+4),cur_year)
+                        setFieldValue("next_renewal_date",newDate)
+                    }
+                    else {
+                        let newDate = setNextRenewalDateFunction(cur_date,(cur_month+3),cur_year)
                         setFieldValue("next_renewal_date",newDate)
                     }
                  }
-            }
-            
+                  else {
+                        let newDate = setNextRenewalDateFunction(cur_date,(cur_month+3),cur_year)
+                        setFieldValue("next_renewal_date",newDate)
+                    }
+            }            
         }
+    }
 
-
-
-       
-
+    function setNextRenewalDateFunction(date,month,year) {
+        alert('function called')
+       return String(date).padStart(2,"0")+"-"+String(month).padStart(2,"0")+"-"+(year)
     }
 
     function returnDaysOfMonth(month,year) {

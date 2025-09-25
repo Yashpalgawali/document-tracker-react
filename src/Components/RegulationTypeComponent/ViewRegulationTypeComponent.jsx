@@ -76,12 +76,11 @@ export default function ViewRegulationTypeComponent() {
                             <td>{regtype.regulation_type}</td>
                             <td><Button variant='contained' color='primary' onClick={()=>updateRegulationType(regtype.regulation_type_id)}><EditIcon /> Update</Button> </td>
                         </tr>
-                    )) 
+                    ))
                   )
                 }
             </tbody>
         </table>
-
-        </div>
+       </div>
     )
 }
