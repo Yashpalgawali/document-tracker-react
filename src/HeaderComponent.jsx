@@ -43,7 +43,11 @@ export default function HeaderComponent(){
                                      <Link className="nav-link" to="/viewvendors">View Vendors</Link>
                                 }
                                 </li>
-                                 
+                                  <li className="nav-item fs-5">
+                                {  
+                                     <Link className="nav-link" to="/viewregulations">View Regulations</Link>
+                                }
+                                </li>
 
                               </ul>
                             </div>

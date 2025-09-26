@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react"
 import { getAllRegulationTypes } from "../../api/RegulationTypeApi"
 import { useNavigate, useParams } from "react-router-dom"
-import { getRegulationById } from "../../api/RegulationApi" 
-import { alertTitleClasses, Box, Button, FormHelperText, TextField, Typography } from "@mui/material"
+import { getRegulationById, saveRegulation } from "../../api/RegulationApi" 
+import { alertTitleClasses, Box, Button, CircularProgress, FormHelperText, TextField, Typography } from "@mui/material"
 import { ErrorMessage, Form, Formik } from "formik"
+
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 import Select from 'react-select';
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import dayjs from "dayjs"
+
 import isLeapYear from "dayjs/plugin/isLeapYear";
+import { error } from "jquery"
 
 export default function RegulationComponent() {
 
@@ -20,7 +24,8 @@ export default function RegulationComponent() {
     const [next_renewal_date,setNextRenewalDate] = useState('')
     const [regulation_issued_date, setRegulationIssuedDate] = useState('')
     const [regulation_frequency, setRegulationFrequency] = useState('')
-    
+    const [loading, setLoading] = useState(false);
+
     const [regulation_frequency_list] = useState( [
         {frequency : "1" , frequency_type : "Monthly"},
         {frequency : "2" , frequency_type : "Quarterly"},
@@ -51,18 +56,38 @@ export default function RegulationComponent() {
         return errors
     }
 
+      const [file, setFile] = useState(null);
+      const [fileName, setFileName] = useState("");
+    
+      const handleFileChange = (e) => {
+        const selectedFile = e.target.files[0];
+        setFile(selectedFile);
+        setFileName(selectedFile ? selectedFile.name : "");
+      };
+
     function onSubmit(values) {
+
         let formatted_reg_date = dayjs(values.regulation_issued_date).format('DD-MM-YYYY')
         let formatted_next_date = dayjs(values.next_renewal_date ).format('DD-MM-YYYY')
 
-        if(values.frequency) {
-            alert(values.frequency)
-        }
+        const formData = new FormData();
+        formData.append("file",file)
+        formData.append("regulation_name",values.regulation_name)
+        formData.append("regulation_description",values.regulation_description)
+        formData.append("regulation_frequency",values.frequency)
+        formData.append("regulation_type_id",parseInt(values.regulation_type_id))
+        formData.append("regulation_issued_date",parseInt(values.regulation_issued_date))
+        formData.append("next_renewal_date",parseInt(values.next_renewal_date))
 
-        let regulation_object = {
+        // formData.forEach((value ,key) => {
+        //     console.log(key ,value)
+        // })
 
-        }
-        console.log('Regulation Object',values)
+        saveRegulation(formData).then((response)=>{
+            alert('Regulation is Saved')
+        }).catch((error)=> {
+            alert('Regulation Not saved')
+        })
     }
 
     const customStyles = {
@@ -357,6 +382,48 @@ export default function RegulationComponent() {
                                     }}
                                 />
                          </Box>
+                         <Box className="mt-4" display="flex" flexDirection="column" alignItems="center" gap={2}>
+                               {/* Hidden file input */}
+                               <input
+                                 type="file"
+                                 accept=".xlsx,.xls,.pdf"
+                                 id="excel-file"
+                                 style={{ display: "none" }}
+                                 onChange={handleFileChange}
+                               />
+
+                               {/* Label + Button */}
+                               <label htmlFor="excel-file">
+                                 <Button
+                                   variant="contained"
+                                   component="span"
+                                   startIcon={<CloudUploadIcon />}
+                                 >
+                                   Choose File
+                                 </Button>
+                               </label>
+                         
+                               {/* Show file name if selected */}
+                               {fileName && (
+                                 <Typography variant="body2" color="textSecondary">
+                                   Selected: {fileName}
+                                 </Typography>
+                               )}
+                         
+                               {/* Upload Button */}
+                               {/* <Button
+                                 variant="contained"
+                                 color="success"
+                                 onClick={handleUpload}
+                                 disabled={!file || loading}
+                                 
+                                 startIcon={
+                                   loading ? <CircularProgress size={20} color="teal" /> : null
+                                 }
+                               >
+                                 {loading ? "Uploading..." : "Upload to Server"}
+                               </Button> */}
+                             </Box>
                        <Box>
                             <Button variant="contained" color="primary" type="submit">{btnValue}</Button>
                        </Box>
