@@ -25,6 +25,7 @@ export default function RegulationComponent() {
     const [regulation_issued_date, setRegulationIssuedDate] = useState('')
     const [regulation_frequency, setRegulationFrequency] = useState('')
     const [loading, setLoading] = useState(false);
+    const [frequency, setFrequency] = useState('')
 
     const [regulation_frequency_list] = useState( [
         {frequency : "1" , frequency_type : "Monthly"},
@@ -69,22 +70,23 @@ export default function RegulationComponent() {
 
         let formatted_reg_date = dayjs(values.regulation_issued_date).format('DD-MM-YYYY')
         let formatted_next_date = dayjs(values.next_renewal_date ).format('DD-MM-YYYY')
-
+        
         const formData = new FormData();
         formData.append("file",file)
         formData.append("regulation_name",values.regulation_name)
         formData.append("regulation_description",values.regulation_description)
         formData.append("regulation_frequency",values.frequency)
-        formData.append("regulation_type_id",parseInt(values.regulation_type_id))
-        formData.append("regulation_issued_date",parseInt(values.regulation_issued_date))
-        formData.append("next_renewal_date",parseInt(values.next_renewal_date))
+        formData.append("regulation_type_id",parseInt(values.regulation_type))
+        formData.append("regulation_issued_date",values.regulation_issued_date)
+        formData.append("next_renewal_date",values.next_renewal_date)
 
-        // formData.forEach((value ,key) => {
-        //     console.log(key ,value)
-        // })
+        formData.forEach((value ,key) => {
+            console.log(key ,value)
+        })
 
         saveRegulation(formData).then((response)=>{
             alert('Regulation is Saved')
+            navigate(`/viewregulations`)
         }).catch((error)=> {
             alert('Regulation Not saved')
         })
@@ -104,7 +106,9 @@ export default function RegulationComponent() {
     }
 
     useEffect(() => {
-        
+        sessionStorage.removeItem('regulation_issued_date')
+        sessionStorage.removeItem('frequency')
+
         getAllRegulationTypes().then((response) => {
             setRegulationTypeList(response.data)
         })
@@ -112,14 +116,19 @@ export default function RegulationComponent() {
         if(id != -1) {
             setBtnValue('Update Regulation')
             getRegulationById(id).then((response) => {
+                console.log(response.data)
                 setRegulationName(response.data.regulation_name)
                 setRegulationDescription(response.data.regulation_description)
+                setRegulationType(response.data.regulation_type)
+                setRegulationIssuedDate(response.data.regulation_issued_date)
+                setNextRenewalDate(response.data.next_renewal_date)
+                setRegulationFrequency(response.data.frequency)
             })
         }
     }, [id])
 
     function getNextRenewalDate(issued_date,setFieldValue) {
-        
+      
         let frequency = sessionStorage.getItem('frequency')
         
         // Convert to dayjs object
@@ -131,12 +140,10 @@ export default function RegulationComponent() {
         if(frequency==1) {
 
             if(cur_month == 12) {
-                // let newDate = String(cur_date).padStart(2,"0")+"-"+String("1").padStart(2,"0")+"-"+(cur_year+1)
                 let newDate = setNextRenewalDateFunction(cur_date,("1"),(cur_year+1))
                 setFieldValue("next_renewal_date",newDate)                
             }
             else {
-              
                 let current_month_days = returnDaysOfMonth(cur_month,cur_year)
                 let next_month_days = returnDaysOfMonth((cur_month+1),cur_year)                
                   
@@ -144,19 +151,15 @@ export default function RegulationComponent() {
                          
                     if(cur_date > next_month_days) {
                         let diff = cur_date - next_month_days
-                        alert('difference is '+diff)
-                        // let newDate = String(diff).padStart(2,"0")+"-"+String(cur_month+2).padStart(2,"0")+"-"+(cur_year)
                         let newDate = setNextRenewalDateFunction(diff,(cur_month+2),cur_year)
                         setFieldValue("next_renewal_date",newDate)    
                     }
                     else {
-                          //let newDate = String(cur_date).padStart(2,"0")+"-"+String(cur_month+1).padStart(2,"0")+"-"+(cur_year)
                           let newDate = setNextRenewalDateFunction(cur_date,(cur_month+1),cur_year)
                           setFieldValue("next_renewal_date",newDate)  
                     }
                 }
                 else {
-                      //let newDate = String(cur_date).padStart(2,"0")+"-"+String(cur_month+1).padStart(2,"0")+"-"+(cur_year)
                       let newDate = setNextRenewalDateFunction(cur_date,(cur_month+1),cur_year)
                       setFieldValue("next_renewal_date",newDate)    
                 }
@@ -176,20 +179,16 @@ export default function RegulationComponent() {
                 let diff = currentYearDays - nextYearDays
 
                 if(cur_date > nextYearDays) {
-                    //let newDate = String(diff).padStart(2,"0")+"-"+String(cur_month+1).padStart(2,"0")+"-"+(next_year)
-                    let newDate = setNextRenewalDateFunction(cur_date,(cur_month+1),cur_year)
+                    let newDate = setNextRenewalDateFunction(diff,(cur_month+1),next_year)
                     setFieldValue("next_renewal_date",newDate)
                 }
                 else {
-                    //let newDate = String(cur_date).padStart(2,"0")+"-"+String(cur_month).padStart(2,"0")+"-"+(next_year)                
-                    let newDate = setNextRenewalDateFunction(cur_date,(cur_month),cur_year)
+                    let newDate = setNextRenewalDateFunction(cur_date,(cur_month),next_year)
                     setFieldValue("next_renewal_date",newDate)
-                }
-                
+                }                
             }
             else {
-                //let newDate = String(cur_date).padStart(2,"0")+"-"+String(cur_month).padStart(2,"0")+"-"+(next_year)
-                let newDate = setNextRenewalDateFunction(cur_date,(cur_month),cur_year)
+                let newDate = setNextRenewalDateFunction(cur_date,(cur_month),next_year)
                 setFieldValue("next_renewal_date",newDate)
             }            
         }
@@ -201,7 +200,6 @@ export default function RegulationComponent() {
             if(cur_month==10 ) {
                 next_month_days = returnDaysOfMonth(("1"),(cur_year+1))
                 let newDate = setNextRenewalDateFunction(cur_date,(cur_month+3),cur_year)
-                //let newDate = String(cur_date).padStart(2,"0")+"-"+String(cur_month+3).padStart(2,"0")+"-"+(cur_year)
                 setFieldValue("next_renewal_date",newDate)
             }
             if(cur_month==11 ) {
@@ -221,7 +219,7 @@ export default function RegulationComponent() {
                  if(next_month_days < current_month_days ) {
                     if(cur_date > next_month_days) {
                         let diff = cur_date - next_month_days
-                        let newDate = setNextRenewalDateFunction(cur_date,(cur_month+4),cur_year)
+                        let newDate = setNextRenewalDateFunction(diff,(cur_month+4),cur_year)
                         setFieldValue("next_renewal_date",newDate)
                     }
                     else {
@@ -237,14 +235,34 @@ export default function RegulationComponent() {
         }
     }
 
-    function setNextRenewalDateFunction(date,month,year) {
-        alert('function called')
+    function setNextRenewalDateFunction(date,month,year) {   
        return String(date).padStart(2,"0")+"-"+String(month).padStart(2,"0")+"-"+(year)
     }
 
     function returnDaysOfMonth(month,year) {
         const daysInMonth = dayjs(`${year}-${String(month).padStart(2, "0") }-01`).daysInMonth()
         return daysInMonth
+    }
+
+    function getRegulationDate(setFieldValue) {
+         
+        if(regulation_issued_date != '') {
+            
+            const regDate = dayjs(regulation_issued_date)
+
+            const dt = String(regDate.date())
+            const mn = String(regDate.month()+1)
+            const yr = String(regDate.year())
+
+            const ndate = setNextRenewalDateFunction(dt,mn,yr)
+
+            getNextRenewalDate(ndate,setFieldValue)
+        }
+        else {
+            
+            let sess_date = sessionStorage.getItem('regulation_issued_date')
+            getNextRenewalDate(sess_date,setFieldValue)            
+        }
     }
 
     return (
@@ -254,11 +272,12 @@ export default function RegulationComponent() {
             </Box>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Formik
-                initialValues= { { regulation_name , regulation_description, 
+                initialValues= { { regulation_name , regulation_description,
+                                   frequency ,
                                    regulation_type : regulation_type ? regulation_type : null,
                                    regulation_issued_date : regulation_issued_date ? dayjs(regulation_issued_date) : "",
                                    next_renewal_date : next_renewal_date ? dayjs(next_renewal_date) : "",
-                                   regulation_frequency :regulation_frequency ? regulation_frequency : null
+                                   regulation_frequency : regulation_frequency ? regulation_frequency : null
                                 } }
                 enableReinitialize={true}
                 validate={validate}
@@ -309,8 +328,7 @@ export default function RegulationComponent() {
                                     .find(option => option.value === values.regulation_type) || null
                                 }
                                 onChange={(option) => {
-                                    setFieldValue('regulation_type', option ? option.value : '')
-                                     
+                                    setFieldValue('regulation_type', option ? option.value : '')                                     
                                 }}
                                 placeholder="Select Regulation Type"
                                 
@@ -335,6 +353,8 @@ export default function RegulationComponent() {
                                 onChange= {(option) => {
                                             setFieldValue('frequency', option ? option.value : '')
                                             sessionStorage.setItem('frequency',option.value)
+                                             
+                                            getRegulationDate(setFieldValue)
                                         }}
                                 placeholder="Select Regulation Frequency"
                                 
@@ -354,9 +374,8 @@ export default function RegulationComponent() {
                                         {   
                                             const formatted_date = date ? date .format("DD-MM-YYYY") : ""
                                             setFieldValue('regulation_issued_date', formatted_date)
-                                            alert('date changed')
+                                            sessionStorage.setItem('regulation_issued_date',formatted_date)
                                             getNextRenewalDate(formatted_date,setFieldValue)
-                                             
                                         }
                                     }
                                     slotProps={{
@@ -395,6 +414,7 @@ export default function RegulationComponent() {
                                {/* Label + Button */}
                                <label htmlFor="excel-file">
                                  <Button
+                                 color="success"
                                    variant="contained"
                                    component="span"
                                    startIcon={<CloudUploadIcon />}
@@ -425,7 +445,7 @@ export default function RegulationComponent() {
                                </Button> */}
                              </Box>
                        <Box>
-                            <Button variant="contained" color="primary" type="submit">{btnValue}</Button>
+                            <Button variant="contained" className="mt-3" color="primary" type="submit">{btnValue}</Button>
                        </Box>
                     </Form>
                 )

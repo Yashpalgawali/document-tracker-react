@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function HeaderComponent(){
     return(
-         <header className="border-bottom border-light border-5 p-2 ">
+         <header className="border-bottom border-light border-5 p-2 fixed-top">
                 <div className="container-fluid">
                     <div className="row">
                         <nav className="navbar navbar-expand-lg navbar-light bg-light">

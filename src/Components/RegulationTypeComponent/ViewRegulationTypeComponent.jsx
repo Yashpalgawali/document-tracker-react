@@ -47,7 +47,7 @@ export default function ViewRegulationTypeComponent() {
     }
 
     return(
-        <div className="container" style={{ marginTop : '50px'}}>
+        <div className="container"  >
         <Box>
             <Typography variant="h4" gutterBottom >View Regulation Types</Typography>
             <Button variant="contained" onClick={addRegulationType} color="secondary" >Add Regulation Type</Button>
